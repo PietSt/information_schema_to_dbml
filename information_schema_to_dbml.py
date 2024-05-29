@@ -22,12 +22,40 @@ with open('data.csv', mode='r', newline='', encoding='utf-8') as file:
             'data_type': row['data_type']
         }
 
-        # Check if the table is already in the dictionary
         if fully_qualified_table_name not in schema_information_dict:
             schema_information_dict[fully_qualified_table_name] = {}
 
-        # Add/update the column information in the table's dictionary
         schema_information_dict[fully_qualified_table_name][full_qualified_column_name] = column_details
 
-# After the loop, 'schema_information_dict' will have the structure you described
-print(schema_information_dict)
+def format_table(data):
+    list_of_strings = []
+    for table, columns in data.items():
+        table_string = f"Table {table}" + " {\n" 
+        for column, details in data[table].items():
+            # Start constructing the string for this column
+            line = f"    {details['column_name']} {details.get('data_type', 'varchar(255)')} ["
+            parts = []
+            
+            if details['is_primary_key'] == 'Yes':
+                parts.append('pk')
+            if details['is_nullable'] == 'NO':
+                parts.append('not null')
+            else:
+                parts.append('null')
+            if details['column_default'] != 'NULL':
+                parts.append(f"default: {details['column_default']}")
+            if details['fk_referenced_column'] != 'NULL':
+                parts.append(f"ref: > {details['fk_referenced_column']}")
+            
+            # Join all parts with commas and close the bracket
+            line += ', '.join(parts) + ']'
+            table_string += line + '\n'
+        table_string += "}"
+        list_of_strings.append(table_string)
+    
+    return list_of_strings
+
+my_list_of_info = format_table(schema_information_dict)
+for string in my_list_of_info:
+    print(string)
+    print()
