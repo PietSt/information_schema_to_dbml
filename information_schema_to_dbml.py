@@ -12,7 +12,7 @@ with open('data.csv', mode='r', newline='', encoding='utf-8') as file:
         full_qualified_column_name = row['fully_qualified_column_name']
 
         column_details = {
-            'column_name': row['column_name'],
+            'column_name': '"' + row['column_name'] + '"',
             'ordinal_position': row['ordinal_position'],
             'is_primary_key': row['is_primary_key'],
             'fk_referenced_table': row.get('fk_referenced_table'),  # use .get for optional fields
@@ -42,8 +42,8 @@ def format_table(data):
                 parts.append('not null')
             else:
                 parts.append('null')
-            if details['column_default'] != 'NULL':
-                parts.append(f"default: {details['column_default']}")
+            # if details['column_default'] != 'NULL':
+            #    parts.append(f"default: '{details['column_default']}'")
             if details['fk_referenced_column'] != 'NULL':
                 parts.append(f"ref: > {details['fk_referenced_column']}")
             
@@ -56,6 +56,7 @@ def format_table(data):
     return list_of_strings
 
 my_list_of_info = format_table(schema_information_dict)
-for string in my_list_of_info:
-    print(string)
-    print()
+with open("erd.dbml", "w") as file:
+    for string in my_list_of_info:
+        file.write(string + "\n")  # Write the string and a newline to the file
+        file.write("\n") 
