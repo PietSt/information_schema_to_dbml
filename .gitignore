@@ -6,3 +6,4 @@ columns.csv
 example_input_dictionary.py
 output.txt
 data.csv
+.sqlfluff

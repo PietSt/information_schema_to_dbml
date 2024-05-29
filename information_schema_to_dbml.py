@@ -8,44 +8,45 @@ with open('data.csv', mode='r', newline='', encoding='utf-8') as file:
     reader = csv.DictReader(file, delimiter=';')
 
     for row in reader:
-        fully_qualified_table_name = row['fully_qualified_table_name']
-        full_qualified_column_name = row['fully_qualified_column_name']
+        Fully_Qualified_Table_Name = row['Fully_Qualified_Table_Name']
+        Fully_Qualified_Column_Name = row['Fully_Qualified_Column_Name']
 
         column_details = {
-            'column_name': '"' + row['column_name'] + '"',
-            'ordinal_position': row['ordinal_position'],
-            'is_primary_key': row['is_primary_key'],
-            'fk_referenced_table': row.get('fk_referenced_table'),  # use .get for optional fields
-            'fk_referenced_column': row.get('fk_referenced_column'),
-            'column_default': row['column_default'],
-            'is_nullable': row['is_nullable'],
-            'data_type': row['data_type']
+            'Column_Name': '"' + row['Column_Name'] + '"',
+            'Ordinal_Position': row['Ordinal_Position'],
+            'Is_Primary_Key': row['Is_Primary_Key'],
+            'Fk_Referenced_Table': row.get('Fk_Referenced_Table'),  # use .get for optional fields
+            'Fk_Referenced_Column': row.get('Fk_Referenced_Column'),
+            'Column_Default': row['Column_Default'],
+            'Is_Nullable': row['Is_Nullable'],
+            'Data_Type': row['Data_Type']
         }
 
-        if fully_qualified_table_name not in schema_information_dict:
-            schema_information_dict[fully_qualified_table_name] = {}
+        if Fully_Qualified_Table_Name not in schema_information_dict:
+            schema_information_dict[Fully_Qualified_Table_Name] = {} # Add the table to the dictionary
 
-        schema_information_dict[fully_qualified_table_name][full_qualified_column_name] = column_details
+        schema_information_dict[Fully_Qualified_Table_Name][Fully_Qualified_Column_Name] = column_details
 
-def format_table(data):
+def construct_dbml_string(schema_information_dict):
     list_of_strings = []
-    for table, columns in data.items():
-        table_string = f"Table {table}" + " {\n" 
-        for column, details in data[table].items():
+
+    for table, columns in schema_information_dict.items():
+        table_string = f"Table {table}" + " {\n" # First line, set the table name and open brackets
+        for column, details in schema_information_dict[table].items():
             # Start constructing the string for this column
-            line = f"    {details['column_name']} {details.get('data_type', 'varchar(255)')} ["
+            line = f"    {details['Column_Name']} {details.get('Data_Type', 'varchar(255)')} ["
             parts = []
             
-            if details['is_primary_key'] == 'Yes':
+            if details['Is_Primary_Key'] == 'Yes':
                 parts.append('pk')
-            if details['is_nullable'] == 'NO':
+            if details['Is_Nullable'] == 'NO':
                 parts.append('not null')
             else:
                 parts.append('null')
-            # if details['column_default'] != 'NULL':
-            #    parts.append(f"default: '{details['column_default']}'")
-            if details['fk_referenced_column'] != 'NULL':
-                parts.append(f"ref: > {details['fk_referenced_column']}")
+            if details['Column_Default'] != 'NULL':
+                parts.append(f'default: "{details["Column_Default"]}"')
+            if details['Fk_Referenced_Column'] != 'NULL':
+                parts.append(f"ref: > {details['Fk_Referenced_Column']}")
             
             # Join all parts with commas and close the bracket
             line += ', '.join(parts) + ']'
@@ -55,8 +56,9 @@ def format_table(data):
     
     return list_of_strings
 
-my_list_of_info = format_table(schema_information_dict)
+dbml_string = construct_dbml_string(schema_information_dict)
+
 with open("erd.dbml", "w") as file:
-    for string in my_list_of_info:
+    for string in dbml_string:
         file.write(string + "\n")  # Write the string and a newline to the file
         file.write("\n") 
