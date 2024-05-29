@@ -31,20 +31,26 @@ with open('foreign_keys.csv', mode='r', newline='', encoding='utf-8') as file:
         to_table_column = row['to_table_fully_qualified_column']
         schema_information_dict[from_table_full_name].append(f"{from_table_column} [ref: > {to_table_column}]")
 
-# for key, value in schema_information_dict.items():
-#     print(f"{key}: {value}")
+for key, value in schema_information_dict.items():
+    print(f"{key}: {value}")
 
-def format_dict_to_dbml_object(data_dict):
-    output_string = ""
-    for key, values in data_dict.items():
-        output_string += f"Table {key} {{\n"
-        output_row = "\n".join(f"    {value}" for value in values)
-        output_string += f"{output_row}\n}}\n\n"
-    return output_string
 
-formatted_string = format_dict_to_dbml_object(schema_information_dict)
 
-filename = 'erd.dbml'
-with open(filename, 'w') as file:
-    # Write the string to the file
-    file.write(formatted_string)
+
+
+    
+
+# def format_dict_to_dbml_object(data_dict):
+#     output_string = ""
+#     for key, values in data_dict.items():
+#         output_string += f"Table {key} {{\n"
+#         output_row = "\n".join(f"    {value}" for value in values)
+#         output_string += f"{output_row}\n}}\n\n"
+#     return output_string
+
+# formatted_string = format_dict_to_dbml_object(schema_information_dict)
+
+# filename = 'erd.dbml'
+# with open(filename, 'w') as file:
+#     # Write the string to the file
+#     file.write(formatted_string)
