@@ -43,15 +43,15 @@ T2 AS (
         FK.CONSTRAINT_SCHEMA, FK.CONSTRAINT_NAME
 )
 SELECT 
-	child_table_schema,
-	child_table_name,
-    CHILD_TABLE_FULL_NAME, 
-    FOREIGN_COLUMNS, 
-	reference_table_schema,
-	reference_table_name,
-	REFERENCE_TABLE_FULL_NAME, 
-    REFERENCE_COLUMNS,
-    UNIQUE_CONSTRAINT_TYPE_REF
+	child_table_schema AS from_table_schema,
+	child_table_name AS from_table_name,
+    CHILD_TABLE_FULL_NAME AS from_table_full_name, 
+    FOREIGN_COLUMNS AS from_table_column, 
+	reference_table_schema AS to_table_schema,
+	reference_table_name AS to_table_name, 
+	REFERENCE_TABLE_FULL_NAME AS to_table_full_name, 
+    REFERENCE_COLUMNS AS to_table_column,
+	CONCAT(reference_table_schema, '.', reference_table_name, '.', REFERENCE_COLUMNS) AS to_table_fully_qualified_column
 FROM   
     T1 
     JOIN T2 ON T1.RN = T2.RN
