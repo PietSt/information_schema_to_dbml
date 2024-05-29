@@ -1,56 +1,33 @@
 import csv
 
+# Initialize the dictionary that will store your schema information
 schema_information_dict = {}
 
-# we start by adding each table to the dictionary
-
-with open('tables.csv', mode='r', newline='', encoding='utf-8') as file:
+# Open your CSV file
+with open('data.csv', mode='r', newline='', encoding='utf-8') as file:
     reader = csv.DictReader(file, delimiter=';')
 
     for row in reader:
-        table_name = row['fully_qualified_table_name']
-        schema_information_dict[table_name] = []
+        fully_qualified_table_name = row['fully_qualified_table_name']
+        full_qualified_column_name = row['fully_qualified_column_name']
 
-# now add the primary keys to each table if it has one
+        column_details = {
+            'column_name': row['column_name'],
+            'ordinal_position': row['ordinal_position'],
+            'is_primary_key': row['is_primary_key'],
+            'fk_referenced_table': row.get('fk_referenced_table'),  # use .get for optional fields
+            'fk_referenced_column': row.get('fk_referenced_column'),
+            'column_default': row['column_default'],
+            'is_nullable': row['is_nullable'],
+            'data_type': row['data_type']
+        }
 
-with open('primary_keys.csv', mode='r', newline='', encoding='utf-8') as file:
-    reader = csv.DictReader(file, delimiter=';')
+        # Check if the table is already in the dictionary
+        if fully_qualified_table_name not in schema_information_dict:
+            schema_information_dict[fully_qualified_table_name] = {}
 
-    for row in reader:
-        table_name = row['fully_qualified_table_name']
-        primary_key_column = row['column_name']
-        schema_information_dict[table_name].append(f"{primary_key_column} [ pk ]")
+        # Add/update the column information in the table's dictionary
+        schema_information_dict[fully_qualified_table_name][full_qualified_column_name] = column_details
 
-# now we add foreign key information
-with open('foreign_keys.csv', mode='r', newline='', encoding='utf-8') as file:
-    reader = csv.DictReader(file, delimiter=';')
-
-    for row in reader:
-        from_table_full_name = row['from_table_full_name']
-        from_table_column = row['from_table_column']
-        to_table_column = row['to_table_fully_qualified_column']
-        schema_information_dict[from_table_full_name].append(f"{from_table_column} [ref: > {to_table_column}]")
-
-for key, value in schema_information_dict.items():
-    print(f"{key}: {value}")
-
-
-
-
-
-    
-
-# def format_dict_to_dbml_object(data_dict):
-#     output_string = ""
-#     for key, values in data_dict.items():
-#         output_string += f"Table {key} {{\n"
-#         output_row = "\n".join(f"    {value}" for value in values)
-#         output_string += f"{output_row}\n}}\n\n"
-#     return output_string
-
-# formatted_string = format_dict_to_dbml_object(schema_information_dict)
-
-# filename = 'erd.dbml'
-# with open(filename, 'w') as file:
-#     # Write the string to the file
-#     file.write(formatted_string)
+# After the loop, 'schema_information_dict' will have the structure you described
+print(schema_information_dict)

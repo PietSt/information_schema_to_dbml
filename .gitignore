@@ -4,3 +4,5 @@ primary_keys.csv
 tables.csv
 columns.csv
 example_input_dictionary.py
+output.txt
+data.csv
