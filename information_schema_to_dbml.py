@@ -63,7 +63,7 @@ def construct_dbml_string(schema_information_dict, rowcount_dict):
             if details['Example_Values'] == None:
                 pass
             else:
-                parts.append(f"Note: '{details['Example_Values']}'")
+                parts.append("Note: " + "'" + f"{details['Example_Values'].replace("'", '')}" + "'")
             
             # Join all parts with commas and close the bracket
             line += ', '.join(parts) + ']'
@@ -71,7 +71,7 @@ def construct_dbml_string(schema_information_dict, rowcount_dict):
         
         # Add row count info before closing the table
         if table in rowcount_dict:
-            table_string += f"    Note: 'approximate row count is {rowcount_dict[table]}'" + '\n'
+            table_string += f"    Note: '{rowcount_dict[table]} rows'" + '\n'
         table_string += "}"
         list_of_strings.append(table_string)
     
