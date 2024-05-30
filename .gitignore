@@ -7,3 +7,5 @@ example_input_dictionary.py
 output.txt
 data.csv
 .sqlfluff
+example_values.csv
+rowcounts.csv
